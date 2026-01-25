@@ -43,5 +43,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "Test_helloKt" //TODO replaced with mainClass = "MainKt" when I have created the actual entry point main.kt
+    mainClass = "MainKt"
 }
