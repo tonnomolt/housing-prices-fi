@@ -42,13 +42,15 @@ async function main() {
 
     await saveToFile(rawDataset);
   } catch (err) {
-    console.error("Error:", err);
+    logger.error({ originalError: err }, "Extraction failed");
     if (err instanceof Error) {
-      console.error(err.stack);
+      logger.error(err.stack);
     }
+    throw err;
   }
 }
 
+//this is a temp testing function, will be deleted and shall not be used in the final 
 async function saveToFile(dataset: RawDataset) {
   const outputDir = "stat_fin_data_output";
   await mkdir(outputDir, { recursive: true });
