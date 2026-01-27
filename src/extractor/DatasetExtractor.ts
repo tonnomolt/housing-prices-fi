@@ -1,3 +1,5 @@
+import { createLogger } from '../utils/Logger.ts';
+
 import type {
     DatasetMetadata,
     RawDataset,
@@ -6,6 +8,7 @@ import type {
     Selection,
     ResponseFormat
 } from '../model/Models.ts';
+import type { Logger } from 'pino';
 
 /**
  * Extracts raw datasets from PX-Web API based on metadata
@@ -18,6 +21,12 @@ export class DatasetExtractor {
      * @param format Output format (default: "json-stat2")
      * @return RawDataset containing the extracted data
      */
+    private logger: Logger;
+
+    constructor() {
+        this.logger = createLogger('DatasetExtractor');
+    }
+
     async extract(
         metadata: DatasetMetadata,
         apiUrl: string,
@@ -128,9 +137,9 @@ export class DatasetExtractor {
 
         if (!response.ok) {
             const body = await response.text();
-            throw new Error(
-                `Failed to extract dataset. Status code: ${response.status}, Body: ${body}`
-            );
+            let err: string = `Failed to extract dataset. Status code: ${response.status}, Body: ${body}`;
+            this.logger.error(err);
+            throw new Error(err);
         }
 
         const data = await response.text();
