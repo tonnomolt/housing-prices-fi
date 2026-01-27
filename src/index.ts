@@ -4,8 +4,9 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { DatasetExtractor } from "./extractor/DatasetExtractor.ts";
+import { DatasetTransformer } from "./transformer/DatasetTransformer.ts";
 import { PxWebDatasetSource } from "./source/PxWebDatasetSource.ts";
-import type { RawDataset } from "./model/Models.ts";
+import type { DatasetMetadata, RawDataset } from "./model/Models.ts";
 import { createLogger } from './utils/Logger.ts';
 
 //central logger init
@@ -19,28 +20,25 @@ async function main() {
 
   logger.info("statfin extract starting...");
 
-  const dataSource = new PxWebDatasetSource(datasetUrl);
-  const extractor = new DatasetExtractor();
+  const dataSource: PxWebDatasetSource = new PxWebDatasetSource(datasetUrl);
+  const extractor: DatasetExtractor = new DatasetExtractor();
 
   try {
-    logger.info(`Fetching metadata from: ${datasetUrl}`);
-    const metadata = await dataSource.fetchMetadata();
-
-    logger.info("Dataset Information:");
-    logger.info(`Title: ${metadata.title}`);
-    logger.info(`Variables: ${metadata.variables.length}`);
-
-    logger.info("Extracting dataset...");
+    //step one: get metadata
+    const metadata: DatasetMetadata = await dataSource.fetchMetadata();
+    //step two: extract actual data
     const rawDataset = await extractor.extract(
       metadata,
       dataSource.getUrl()
     );
+    //step three: initiate transformer
+    const transformer: DatasetTransformer = new DatasetTransformer(
+      rawDataset,
+      dataSource.datasetName
+    )
+    transformer.testPrint() //TODO remove
 
-    logger.info("Extraction complete!");
-    logger.info(`Format: ${rawDataset.format}`);
-    logger.info(`Data size: ${rawDataset.data.length} bytes`);
-
-    await saveToFile(rawDataset);
+    //await saveToFile(rawDataset); //TODO remove this test save
   } catch (err) {
     logger.error({ originalError: err }, "Extraction failed");
     if (err instanceof Error) {

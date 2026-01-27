@@ -32,10 +32,16 @@ export class DatasetExtractor {
         apiUrl: string,
         format: string = 'json-stat2'
     ): Promise<RawDataset> {
+        this.logger.info("Extracting dataset...");
         //TODO replace with buildDefaultQuery after initial tests
         const query = this.buildTestQuery(metadata, format);
         //const query = this.buildDefaultQuery(metadata, format);
-        return this.executeQuery(apiUrl, metadata, query, format);
+
+        let fetchedData: RawDataset = await this.executeQuery(apiUrl, metadata, query, format);
+        this.logger.info("Extracting dataset complete");
+        this.logger.info(`Format: ${fetchedData.format}`);
+        this.logger.info(`Data size: ${fetchedData.data.length} bytes`);
+        return fetchedData;
     }
 
     /**
