@@ -1,4 +1,7 @@
+import { createLogger } from '../utils/Logger.ts';
+
 import type { DatasetMetadata, Variable } from '../model/Models.ts';
+import type { Logger } from 'pino';
 
 /**
  * Implementation of DatasetSource for PX-Web API
@@ -6,9 +9,11 @@ import type { DatasetMetadata, Variable } from '../model/Models.ts';
  */
 export class PxWebDatasetSource {
     private datasetUrl: string;
+    private logger: Logger;
 
     constructor(datasetUrl: string) {
         this.datasetUrl = datasetUrl;
+        this.logger = createLogger('PxWebDatasetSource');
     }
 
     async fetchMetadata(): Promise<DatasetMetadata> {
@@ -23,7 +28,9 @@ export class PxWebDatasetSource {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to fetch metadata. Status code: ${response.status}`);
+            let err: string = `Failed to fetch metadata. Status code: ${response.status}`;
+            this.logger.error(err);
+            throw new Error(err);
         }
 
         const body = await response.text();

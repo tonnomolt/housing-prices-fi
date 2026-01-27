@@ -14,7 +14,7 @@ const timestamp = () => {
     minute: '2-digit',
     second: '2-digit',
     hour12: false
-  }).replace(/\//g, '-').replace(',', ''); // Format: 27.01.2025 15:30:45 -> 27-01-2025 15:30:45
+  });
   
   return `,"time":"${finnishTime}"`;
 };

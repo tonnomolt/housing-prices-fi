@@ -8,18 +8,16 @@ import { PxWebDatasetSource } from "./source/PxWebDatasetSource.ts";
 import type { RawDataset } from "./model/Models.ts";
 import { createLogger } from './utils/Logger.ts';
 
+//central logger init
+const logger = createLogger('app');
+logger.info('Application starting...');
+
 
 async function main() {
-  //central logger init
-  const logger = createLogger('app');
-  logger.info('Application starting...');
-
   const datasetUrl =
     "https://pxdata.stat.fi/PXWeb/api/v1/en/StatFin/statfin_ashi_pxt_13mu.px";
 
-  logger.info("PX-Web Dataset Extractor");
-  logger.info("========================\n");
-  return //TODO remove
+  logger.info("statfin extract starting...");
 
   const dataSource = new PxWebDatasetSource(datasetUrl);
   const extractor = new DatasetExtractor();
@@ -28,17 +26,17 @@ async function main() {
     logger.info(`Fetching metadata from: ${datasetUrl}`);
     const metadata = await dataSource.fetchMetadata();
 
-    logger.info("\nDataset Information:");
+    logger.info("Dataset Information:");
     logger.info(`Title: ${metadata.title}`);
     logger.info(`Variables: ${metadata.variables.length}`);
 
-    logger.info("\nExtracting dataset...");
+    logger.info("Extracting dataset...");
     const rawDataset = await extractor.extract(
       metadata,
       dataSource.getUrl()
     );
 
-    logger.info("\nExtraction complete!");
+    logger.info("Extraction complete!");
     logger.info(`Format: ${rawDataset.format}`);
     logger.info(`Data size: ${rawDataset.data.length} bytes`);
 
@@ -62,6 +60,4 @@ async function saveToFile(dataset: RawDataset) {
   logger.info(`Saved to: ${filePath}`);
 }
 
-// Bun supports top-level await,
-// but calling main() is still a nice convention
 await main();
