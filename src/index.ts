@@ -31,12 +31,22 @@ async function main() {
       metadata,
       dataSource.getUrl()
     );
-    //step three: initiate transformer
+    //step three: transform raw data into structured records
     const transformer: DatasetTransformer = new DatasetTransformer(
       rawDataset,
       dataSource.datasetName
     )
-    transformer.testPrint() //TODO remove
+    const result = transformer.transform();
+    logger.info(`Transformed ${result.records.length} records, ${result.skipped} skipped`);
+    for (const record of result.records) {
+      logger.info({
+        postalCode: record.postalCode,
+        buildingType: record.buildingType,
+        date: record.date.toISOString().slice(0, 10),
+        pricePerSqm: record.pricePerSqm,
+        transactionCount: record.transactionCount,
+      }, 'Record');
+    }
 
     //await saveToFile(rawDataset); //TODO remove this test save
   } catch (err) {

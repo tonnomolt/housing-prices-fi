@@ -60,3 +60,31 @@ export interface Selection {
 export interface ResponseFormat {
     format: string;
 }
+
+// ── Transformer output models ──
+
+/**
+ * Building type enum matching the DB schema
+ */
+export type BuildingType = 'all' | 'apartment_1r' | 'apartment_2r' | 'apartment_3r_plus' | 'terraced';
+
+/**
+ * A single transformed price record, ready for DB insertion
+ */
+export interface PriceRecord {
+    postalCode: string;        // '00400'
+    buildingType: BuildingType;
+    date: Date;                // Year → YYYY-01-01
+    pricePerSqm: number | null;
+    transactionCount: number | null;
+    sourceName: string;        // e.g. 'statfin_ashi_pxt_13mu'
+}
+
+/**
+ * Result of a transformation run
+ */
+export interface TransformResult {
+    records: PriceRecord[];
+    skipped: number;           // Records skipped (e.g. both values null)
+    sourceName: string;
+}
