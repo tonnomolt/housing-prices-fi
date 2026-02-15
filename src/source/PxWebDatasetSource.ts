@@ -1,5 +1,6 @@
 import { createLogger } from '../utils/Logger.ts';
 
+import type { AsyncDatasetSource } from './DatasetSource.ts';
 import type { DatasetMetadata, Variable } from '../model/Models.ts';
 import type { Logger } from 'pino';
 
@@ -7,7 +8,7 @@ import type { Logger } from 'pino';
  * Implementation of DatasetSource for PX-Web API
  * Handles communication with Statistics Finland's PX-Web API
  */
-export class PxWebDatasetSource {
+export class PxWebDatasetSource implements AsyncDatasetSource {
     datasetUrl: string;
     datasetName: string;
     private logger: Logger;
