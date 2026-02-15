@@ -10,6 +10,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "pino": "^10.3.0"
+    "pino": "^10.3.0",
+    "postgres": "^3.4.8"
   }
 }

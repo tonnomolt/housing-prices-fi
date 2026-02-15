@@ -41,10 +41,26 @@ async function main() {
     const result = transformer.transform();
     logger.info(`Transformed ${result.records.length} records, ${result.skipped} skipped`);
 
-    // ── Temporary preview output ──
+    // Preview output
     prettyPrintResults(result);
 
-    //await saveToFile(rawDataset); //TODO remove this test save
+    // Step four: store to database (if DATABASE_URL is set)
+    if (process.env.DATABASE_URL) {
+      const { DatabaseClient } = await import("./db/DatabaseClient.ts");
+      const db = new DatabaseClient();
+      try {
+        const { sourceId, recordsStored } = await db.storeTransformResult(
+          result,
+          'Statistics Finland - prices of old dwellings in housing companies',
+          datasetUrl
+        );
+        logger.info(`Stored ${recordsStored} records to DB (source id: ${sourceId})`);
+      } finally {
+        await db.close();
+      }
+    } else {
+      logger.info('DATABASE_URL not set, skipping DB insert (preview mode)');
+    }
   } catch (err) {
     logger.error({ originalError: err }, "Extraction failed");
     if (err instanceof Error) {
