@@ -1,8 +1,8 @@
 # ── Housing Prices FI ──
 # Shortcuts for common Docker operations.
 
-COMPOSE_DEV  = docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env.dev
-COMPOSE_PROD = docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod
+COMPOSE_DEV  = docker compose -p hsp-dev -f docker-compose.yml -f docker-compose.dev.yml --env-file .env.dev
+COMPOSE_PROD = docker compose -p hsp-prod -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod
 
 # ── Dev ──
 .PHONY: dev-up dev-down dev-db dev-fetch dev-logs dev-psql
