@@ -1,0 +1,5 @@
+node_modules
+.git
+.env
+*.md
+stat_fin_data_output

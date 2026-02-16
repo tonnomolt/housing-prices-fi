@@ -1,0 +1,16 @@
+## Dev overrides — ports exposed, debug logging, no restart policy.
+## Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env.dev up
+
+services:
+  postgres:
+    restart: "no"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  fetcher:
+    restart: "no"
+    environment:
+      LOG_LEVEL: debug
+    # Mount source for hot-reload during development
+    volumes:
+      - ./src:/app/src:ro

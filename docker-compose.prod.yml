@@ -1,0 +1,18 @@
+## Prod overrides — no exposed ports, restart policy, resource limits.
+## Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
+
+services:
+  postgres:
+    restart: unless-stopped
+    # No ports exposed — only accessible via internal Docker network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  fetcher:
+    restart: "no"  # Runs once per invocation (scheduled externally)
+    deploy:
+      resources:
+        limits:
+          memory: 256M

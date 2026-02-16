@@ -31,3 +31,7 @@ node_modules/
 
 #temp files produced during dev
 stat_fin_data_output/
+
+# Environment (keep .env.dev and .env.prod.example in repo)
+.env
+.env.prod

@@ -1,0 +1,39 @@
+## Base configuration — shared by all environments.
+## Use with an override file:
+##   docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env.dev up
+##   docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
+
+services:
+  # ── PostgreSQL ──
+  postgres:
+    image: postgres:17-alpine
+    container_name: hsp-postgres-${ENV:-dev}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata-${ENV:-dev}:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── Fetcher / Transformer pipeline ──
+  fetcher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hsp-fetcher-${ENV:-dev}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+volumes:
+  pgdata-dev:
+  pgdata-prod:
