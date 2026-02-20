@@ -5,6 +5,7 @@ import type {
     TransformResult,
     BuildingTypeMapping,
 } from '../model/Models.ts';
+import type { PostalCodeFeature } from '../source/PostalCodeGeometrySource.ts';
 import type { Logger } from 'pino';
 
 /**
@@ -176,6 +177,57 @@ export class DatabaseClient {
         );
 
         return { sourceId, recordsStored };
+    }
+
+    /**
+     * Upsert postal code geometry and metadata from Tilastokeskus WFS data.
+     * Updates name, municipality and geometry for each postal code.
+     *
+     * @returns Number of records upserted
+     */
+    async storePostalCodeGeometries(
+        features: PostalCodeFeature[]
+    ): Promise<number> {
+        if (features.length === 0) return 0;
+
+        this.logger.info(
+            `Storing geometries for ${features.length} postal codes...`
+        );
+
+        let count = 0;
+        const BATCH_SIZE = 200;
+
+        for (let i = 0; i < features.length; i += BATCH_SIZE) {
+            const batch = features.slice(i, i + BATCH_SIZE);
+
+            for (const f of batch) {
+                const geometryJson = f.geometry
+                    ? this.sql.json(f.geometry)
+                    : null;
+
+                await this.sql`
+                    INSERT INTO postal_code (code, name, municipality, geometry)
+                    VALUES (
+                        ${f.postalCode},
+                        ${f.name},
+                        ${f.municipality},
+                        ${geometryJson}
+                    )
+                    ON CONFLICT (code) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        municipality = EXCLUDED.municipality,
+                        geometry = EXCLUDED.geometry
+                `;
+                count++;
+            }
+
+            this.logger.info(
+                `Stored batch ${Math.floor(i / BATCH_SIZE) + 1}: ${count}/${features.length}`
+            );
+        }
+
+        this.logger.info(`Geometry store complete: ${count} postal codes`);
+        return count;
     }
 
     /**

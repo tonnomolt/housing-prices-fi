@@ -2,6 +2,7 @@ import { createLogger } from '../utils/Logger.ts';
 import { getYears } from './routes/years.ts';
 import { getPrices } from './routes/prices.ts';
 import { getBuildingTypes } from './routes/buildingTypes.ts';
+import { getGeometries } from './routes/geometries.ts';
 
 const logger = createLogger('API');
 const PORT = parseInt(process.env.API_PORT ?? '3000', 10);
@@ -45,6 +46,9 @@ const server = Bun.serve({
                     break;
                 case '/api/building-types':
                     response = await getBuildingTypes();
+                    break;
+                case '/api/geometries':
+                    response = await getGeometries();
                     break;
                 case '/health':
                     response = Response.json({ status: 'ok' });

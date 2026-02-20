@@ -25,6 +25,9 @@ dev-logs:              ## Tail dev logs
 dev-psql:              ## Open psql shell (dev)
 	$(COMPOSE_DEV) exec postgres psql -U hsp -d housing_prices
 
+dev-geo:               ## Fetch postal code geometries into DB (dev)
+	$(COMPOSE_DEV) run --rm geo-fetch
+
 dev-api:               ## Start API server (dev)
 	$(COMPOSE_DEV) up -d api
 

@@ -22,7 +22,8 @@ INSERT INTO building_type (code, description, description_fi) VALUES
 CREATE TABLE postal_code (
     code         VARCHAR(5) PRIMARY KEY,     -- '00100'
     name         TEXT,                        -- 'Helsinki keskusta'
-    municipality TEXT                         -- 'Helsinki'
+    municipality TEXT,                        -- 'Helsinki'
+    geometry     JSONB                        -- GeoJSON geometry (WGS84/EPSG:4326)
 );
 
 -- Data sources
