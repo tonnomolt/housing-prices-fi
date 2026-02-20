@@ -16,3 +16,12 @@ services:
       resources:
         limits:
           memory: 256M
+
+  api:
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-3000}:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M

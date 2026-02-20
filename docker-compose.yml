@@ -34,6 +34,21 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       LOG_LEVEL: ${LOG_LEVEL:-info}
 
+  # ── Backend API ──
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hsp-api-${ENV:-dev}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      API_PORT: "3000"
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    command: ["bun", "run", "src/api/server.ts"]
+
 volumes:
   pgdata-dev:
   pgdata-prod:

@@ -11,6 +11,14 @@ services:
     restart: "no"
     environment:
       LOG_LEVEL: debug
-    # Mount source for hot-reload during development
+    volumes:
+      - ./src:/app/src:ro
+
+  api:
+    restart: "no"
+    ports:
+      - "${API_PORT:-3000}:3000"
+    environment:
+      LOG_LEVEL: debug
     volumes:
       - ./src:/app/src:ro

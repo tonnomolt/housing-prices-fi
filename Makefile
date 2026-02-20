@@ -25,6 +25,9 @@ dev-logs:              ## Tail dev logs
 dev-psql:              ## Open psql shell (dev)
 	$(COMPOSE_DEV) exec postgres psql -U hsp -d housing_prices
 
+dev-api:               ## Start API server (dev)
+	$(COMPOSE_DEV) up -d api
+
 dev-reset:             ## Destroy dev DB volume and recreate
 	$(COMPOSE_DEV) down -v
 	$(COMPOSE_DEV) up -d postgres
