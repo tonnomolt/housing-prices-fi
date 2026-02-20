@@ -201,13 +201,17 @@ export class DatabaseClient {
             const batch = features.slice(i, i + BATCH_SIZE);
 
             for (const f of batch) {
+                const geometryJson = f.geometry
+                    ? this.sql.json(f.geometry)
+                    : null;
+
                 await this.sql`
                     INSERT INTO postal_code (code, name, municipality, geometry)
                     VALUES (
                         ${f.postalCode},
                         ${f.name},
                         ${f.municipality},
-                        ${JSON.stringify(f.geometry)}::jsonb
+                        ${geometryJson}
                     )
                     ON CONFLICT (code) DO UPDATE SET
                         name = EXCLUDED.name,

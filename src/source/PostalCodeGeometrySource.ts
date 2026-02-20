@@ -32,9 +32,7 @@ export class PostalCodeGeometrySource {
         url.searchParams.set('typeName', LAYER);
         url.searchParams.set('outputFormat', 'application/json');
         url.searchParams.set('srsName', 'EPSG:4326');
-        // Only fetch the fields we need to keep response size manageable
-        url.searchParams.set('propertyName', 'postinumeroalue,nimi,kunta,geometry');
-
+        // Note: propertyName filter excludes geometry, so we fetch all properties
         logger.info(`Fetching postal code geometries from Tilastokeskus WFS...`);
 
         const response = await fetch(url.toString());
@@ -81,7 +79,6 @@ export class PostalCodeGeometrySource {
         url.searchParams.set('typeName', LAYER);
         url.searchParams.set('outputFormat', 'application/json');
         url.searchParams.set('srsName', 'EPSG:4326');
-        url.searchParams.set('propertyName', 'postinumeroalue,nimi,kunta,geometry');
         url.searchParams.set('CQL_FILTER', cqlFilter);
 
         logger.info(`Fetching geometries for ${codes.length} postal codes...`);
