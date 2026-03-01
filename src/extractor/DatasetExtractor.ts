@@ -9,7 +9,7 @@ import type {
     Selection,
     ResponseFormat
 } from '../model/Models.ts';
-import { DEFAULT_BUILDING_TYPES, DEFAULT_METRICS } from '../config/postalCodes.ts';
+import { DEFAULT_BUILDING_TYPES, DEFAULT_METRICS } from '../config/fetchConfig.ts';
 import type { Logger } from 'pino';
 
 /**

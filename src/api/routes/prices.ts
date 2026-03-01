@@ -1,5 +1,4 @@
 import { sql } from '../db.ts';
-import { MUNICIPALITY_POSTAL_CODES } from '../../config/postalCodes.ts';
 
 /**
  * GET /api/prices?year=2024&building_type=all&municipality=Helsinki
@@ -22,13 +21,16 @@ export async function getPrices(url: URL): Promise<Response> {
         return Response.json({ error: 'year must be a number' }, { status: 400 });
     }
 
-    // Resolve postal codes for municipality filter
-    const postalCodeFilter = municipality
-        ? MUNICIPALITY_POSTAL_CODES[municipality] ?? null
-        : null;
-
-    if (municipality && !postalCodeFilter) {
-        return Response.json({ error: `Unknown municipality: ${municipality}` }, { status: 400 });
+    // Resolve postal codes for municipality filter from DB
+    let postalCodeFilter: string[] | null = null;
+    if (municipality) {
+        const rows = await sql`
+            SELECT code FROM postal_code WHERE municipality = ${municipality}
+        `;
+        if (rows.length === 0) {
+            return Response.json({ error: `Unknown municipality: ${municipality}` }, { status: 400 });
+        }
+        postalCodeFilter = rows.map(r => r.code);
     }
 
     const prevYear = year - 1;

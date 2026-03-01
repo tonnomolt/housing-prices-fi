@@ -7,7 +7,8 @@ import { DatasetExtractor } from "./extractor/DatasetExtractor.ts";
 import { DatasetTransformer } from "./transformer/DatasetTransformer.ts";
 import { STATFIN_BUILDING_TYPE_MAPPINGS } from "./transformer/StatfinBuildingTypes.ts";
 import { PxWebDatasetSource } from "./source/PxWebDatasetSource.ts";
-import { ALL_POSTAL_CODES, DEFAULT_YEARS } from "./config/postalCodes.ts";
+import { MunicipalityResolver } from "./resolver/MunicipalityResolver.ts";
+import { TARGET_MUNICIPALITIES, MUNICIPALITY_NAME_TO_CODE, DEFAULT_YEARS } from "./config/fetchConfig.ts";
 import type { DatasetMetadata, RawDataset, TransformResult, QueryConfig, PriceRecord } from "./model/Models.ts";
 import { createLogger } from './utils/Logger.ts';
 
@@ -21,12 +22,18 @@ async function main() {
     "https://pxdata.stat.fi/PXWeb/api/v1/en/StatFin/statfin_ashi_pxt_13mu.px";
 
   logger.info("statfin extract starting...");
+  logger.info(`Target municipalities: ${TARGET_MUNICIPALITIES.join(', ')}`);
+
+  // Step 0: Resolve municipality names → postal codes via WFS
+  const resolver = new MunicipalityResolver();
+  const postalCodes = await resolver.resolveFlat(TARGET_MUNICIPALITIES, MUNICIPALITY_NAME_TO_CODE);
+  logger.info(`Resolved ${postalCodes.length} postal codes from ${TARGET_MUNICIPALITIES.length} municipalities`);
 
   const dataSource: PxWebDatasetSource = new PxWebDatasetSource(datasetUrl);
   const extractor: DatasetExtractor = new DatasetExtractor();
 
   const queryConfig: QueryConfig = {
-    postalCodes: ALL_POSTAL_CODES,
+    postalCodes,
     years: DEFAULT_YEARS,
   };
 
