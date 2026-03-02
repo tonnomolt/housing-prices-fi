@@ -17,6 +17,7 @@ export const TARGET_MUNICIPALITIES: string[] = [
     'Ylöjärvi',
     'Kangasala',
     'Nokia',
+    'Lempäälä'
 ];
 
 // ── Municipality name → code mapping ──
